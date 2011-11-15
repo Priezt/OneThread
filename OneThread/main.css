@@ -1,0 +1,8 @@
+#content {
+	display: block;
+	border-style: solid;
+	border-width: 2px;
+	border-color: #888;
+	margin: 5px;
+	padding: 5px;
+}

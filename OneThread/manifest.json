@@ -1,0 +1,21 @@
+﻿{
+	"name": "一页读社交",
+	"version": "1.0",
+	"description": "只读的社交整合客户端",
+	"permissions": [
+		"http://*/*",
+		"https://*/*",
+		"tabs",
+		"notifications"
+	],
+	"icons": {
+		"16": "img/16.png",
+		"48": "img/48.png",
+		"128": "img/128.png"
+	},
+	"app": {
+		"launch": {
+			"local_path": "main.html"
+		}
+	}
+}
