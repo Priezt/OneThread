@@ -5,6 +5,7 @@ var adpt = '';
 var errors = [];
 var to_be_shown = [];
 var cache = new Array();
+var adapter_error = new Array();
 
 $(init);
 
@@ -21,9 +22,13 @@ function init(){
 
 function test_func(){
 	$.ajax({
-		url: 'http://www.googleasdfasf.com',
+		url: 'http://www.kaixin001.com/home',
 		cache: false,
 		success: function(data){
+			$("#playground")
+				.empty()
+				.append($(fetch_html(data)))
+				.show();
 			console.log("success");
 		},
 		error: function(jqXHR, textStatus, errorThrown){
@@ -46,7 +51,8 @@ function load_conf(){
 		conf = {
 			'debug': true,
 			'interval': 5,
-			'interest': ['weibo', 'kaixin']
+			'hours': 24,
+			'interest': []
 		};
 		save_conf();
 	}
@@ -81,7 +87,7 @@ function phase_1_get_adapter(){
 		adpt = adapters[current_feed];
 		phase_2_get_url();
 	}else{
-		phase_end();
+		phase_final();
 	}
 }
 
@@ -90,6 +96,7 @@ function phase_2_get_url(){
 	$.ajax({
 		url: adpt.url,
 		cache: false,
+		timeout: 30000,
 		success: phase_3_data_callback,
 		error: phase_error
 	});
@@ -100,20 +107,44 @@ function phase_3_data_callback(data){
 	var result = adpt.parser(data);
 	if(result && result.length > 0){
 		console.log("item fetched: " + result.length);
-		var items = [];
 		for(var c=0;c<result.length;c++){
 			if(is_new_item(result[c])){
-				items.push(result[c]);
+				result[c].adapter = current_feed;
+				to_be_shown.push(result[c]);
 			}
 		}
-		phase_4_show_items(items);
+		adapter_error[current_feed] = false;
+		phase_1_get_adapter();
 	}else{
 		phase_error();
 	}
 }
 
-function phase_4_show_items(items){
+function phase_4_sort_items(items){
 	console.log("phase 4: " + items.length);
+	for(var c=items.length-2;c>=0;c--){
+		for(var d=0;d<=c;d++){
+			if(items[d].date >= items[d+1].date){
+				var temp = items[d];
+				items[d] = items[d+1];
+				items[d+1] = temp;
+			}
+		}
+	}
+	var earliest_date = Date.now() - conf.hours * 60 * 60 * 1000;
+	var result = [];
+	for(var c=0;c<items.length;c++){
+		if(items[c].date < earliest_date){
+			break;
+		}
+		result.push(items[c]);
+	}
+	console.log("result: " + result.length);
+	return result;
+}
+
+function phase_5_show_items(items){
+	console.log("phase 5: " + items.length);
 	for(var c=0;c<items.length;c++){
 		var item = items[c];
 		var new_div = $("<div></div>")
@@ -133,12 +164,13 @@ function phase_4_show_items(items){
 										.attr("href", item.link)
 										.append(
 											$("<img>")
-												.attr("src", adpt.icon)
+												.attr("src", adapters[item.adapter].icon)
 										)
 										.click(item_open_link_click)
 								)
 						).append(
 							$("<td></td>")
+								.attr("valign", "top")
 								.addClass("ot_item_right")
 								.append(item.content)
 						)
@@ -146,15 +178,29 @@ function phase_4_show_items(items){
 		);
 		new_div.insertAfter($("#top_dummy"));
 	}
-	phase_end();
-	//phase_1_get_adapter();
+}
+
+function phase_6_show_notification(items){
+	console.log("phase 6: " + items.length);
+	for(var c=0;c<items.length;c++){
+		var item = items[c];
+	}
 }
 
 function phase_error(){
 	console.log("phase error: " + current_feed);
-	errors.push((new Date()).toUTCString() + ": " + current_feed);
+	//errors.push((new Date()).toUTCString() + ": " + current_feed);
+	adapter_error[current_feed] = true;
 	// todo: need login notification
 	phase_1_get_adapter();
+}
+
+function phase_final(){
+	console.log("phase final");
+	to_be_shown = phase_4_sort_items(to_be_shown);
+	phase_5_show_items(to_be_shown);
+	phase_6_show_notification(to_be_shown);
+	phase_end();
 }
 
 function phase_end(){
