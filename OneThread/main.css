@@ -29,7 +29,6 @@ li {
 }
 
 #top_dummy {
-	display: none;
 }
 
 .ot_item {
@@ -61,3 +60,58 @@ li {
 	padding: 5px;
 }
 
+#warning {
+	display: none;
+	border-style: solid;
+	border-color: #F00;
+	border-width: 2px;
+	margin: 5px;
+	padding: 5px;
+	font-size: 12px;
+	color: #F00;
+	background-color: #CFC;
+	width: 500px;
+}
+
+.error_item {
+	display: inline-block;
+	margin: 2px;
+	cursor: pointer;
+}
+
+.time_area {
+	color: #888;
+	padding-left: 350px;
+}
+
+#dev_zone {
+	display: block;
+}
+
+#select_sites {
+	display: block;
+}
+
+.sites {
+	display: inline-block;
+	border-style: solid;
+	border-width: 3px;
+	margin: 5px;
+	cursor: pointer;
+	padding: 2px;
+}
+
+.site_selected {
+	border-color: #0F0;
+	opacity: 1;
+}
+
+.site_deselected {
+	border-color: #F00;
+	opacity: 0.2;
+}
+
+#loading {
+	width: 500px;
+	margin: 5px;
+}

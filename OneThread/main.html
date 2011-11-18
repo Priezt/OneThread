@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 	<head>
 		<script src="lib/jquery-1.6.1.min.js"></script>
 		<script src="lib/ztoolkit.js"></script>
@@ -6,13 +6,28 @@
 		<script src="adapter.js"></script>
 		<script src="main.js"></script>
 		<link href="main.css" type="text/css" rel="stylesheet"/>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	</head>
 	<body>
-		<input type="button" value="Start" id="start">
-		<input type="button" value="Test" id="test">
+		<div id="dev_zone">
+			<input type="button" value="Start" id="start">
+			<input type="button" value="Test" id="test">
+		</div>
+		<div id="select_sites">
+		</div>
 		<hr>
+		<div id="warning">
+			以下站点连接不上或者没有登录，点击查看<br>
+			<div id="error_list">
+			</div>
+		</div>
 		<div id="content">
-			<div id="top_dummy"></div>
+			<div id="refresh">
+				<input type="button" value="刷新" id="refresh_button">
+			</div>
+			<div id="top_dummy">
+				<progress id="loading"></progress>
+			</div>
 		</div>
 		<div id="playground"></div>
 	</body>

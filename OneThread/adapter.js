@@ -2,7 +2,7 @@ var adapters = {
 	'weibo': {
 		'icon': 'img/weibo.png',
 		'url': 'http://weibo.com/aj/mblog/fsearch',
-		'login': '',
+		'login': 'http://weibo.com/',
 		'parser': function(data){
 			//console.log(data);
 			var result = [];
@@ -28,7 +28,7 @@ var adapters = {
 				}).click(item_link_click);
 				$(this).find("img.bigcursor").click(function(){
 					var src = $(this).attr("src");
-					//console.log("click: " + src);
+					console.log("click: " + src);
 					if(src.indexOf('thumbnail') > 0){
 						src = src.replace(/thumbnail/, 'bmiddle');
 						$(this).css("cursor", "url(img/small.cur)");
@@ -36,6 +36,7 @@ var adapters = {
 						src = src.replace(/bmiddle/, 'thumbnail');
 						$(this).css("cursor", "url(img/big.cur)");
 					}
+					console.log("exchange: " + src);
 					$(this).attr("src", src);
 				}).css("cursor", "url(img/big.cur)");
 				var item = {
@@ -54,7 +55,7 @@ var adapters = {
 	'twitter': {
 		'icon': 'img/twitter.png',
 		'url': 'http://twitter.com',
-		'login': '',
+		'login': 'http://twitter.com/',
 		'parser': function(data){
 			var result = [];
 			var d = $(fetch_html(data));
@@ -95,7 +96,7 @@ var adapters = {
 	'kaixin': {
 		'icon': 'img/kaixin.png',
 		'url': 'http://www.kaixin001.com/home',
-		'login': '',
+		'login': 'http://www.kaixin001.com/',
 		'parser': function(data){
 			var result = [];
 			var d = $(fetch_html(data));
@@ -106,10 +107,13 @@ var adapters = {
 			//console.log(d);
 			$("#playground div#divnews div.gw1").each(function(){
 				//console.log($(this));
-				var date = nw;
+				var date_string = $(this).find("div.b_func_bar > span").first().text();
+				//console.log(date_string);
+				var date = parse_kaixin_time(date_string);
+				//console.log(date);
 				var uid = md5($(this).find("div.newscnt").html());
 				var link = "http://www.kaixin001.com/home";
-				var author = $("");
+				var author = $("<div></div>").css("display", "none");
 				var content = $(this).find("div.newscnt");
 				content.find("a").each(function(){
 					var href = $(this).attr("href");
@@ -130,7 +134,7 @@ var adapters = {
 				};
 				result.push(item);
 			});
-			result = result.slice(0, 10);
+			//result = result.slice(0, 20);
 			//console.log(result);
 			return result;
 		}
@@ -151,4 +155,41 @@ function item_open_link_click(event){
 
 function md5(str){
 	return calcMD5(str);
+}
+
+function parse_kaixin_time(date_string){
+	var parts = date_string.split(' ');
+	var current_date = new Date();
+	var default_date = current_date.getTime() - 2 * 24 * 60 * 60 * 1000;
+	if(parts.length != 2){
+		return default_date;
+	}
+	var rparts = parts[1].split(":");
+	if(rparts.length != 2){
+		return default_date;
+	}
+	if(parts[0] == "\u4eca\u5929"){
+		current_date.setHours(parseInt(rparts[0]));
+		current_date.setMinutes(parseInt(rparts[1]));
+		return current_date.getTime();
+	}else if(parts[0] == "\u6628\u5929"){
+		current_date.setHours(parseInt(rparts[0]));
+		current_date.setMinutes(parseInt(rparts[1]));
+		return current_date.getTime() -  1 * 24 * 60 * 60 * 1000;
+	}else{
+		return default_date;
+	}
+}
+function time2str(date){
+	var d = new Date();
+	d.setTime(date);
+	var result = "";
+	result += d.getFullYear();
+	result += "/";
+	result += (d.getMonth() + 1);
+	result += "/";
+	result += d.getDate();
+	result += " ";
+	result += d.toLocaleTimeString();
+	return result;
 }

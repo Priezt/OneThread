@@ -1,0 +1,9 @@
+.site_update {
+	display: inline-block;
+	margin: 5px;
+}
+
+body {
+	cursor: pointer;
+	font-weight: bold;
+}
