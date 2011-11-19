@@ -85,7 +85,7 @@ li {
 }
 
 #dev_zone {
-	display: block;
+	display: none;
 }
 
 #select_sites {

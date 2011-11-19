@@ -40,6 +40,7 @@ function init(){
 	$("#test").click(function(){
 		test_func();
 	});
+	start_main_loop();
 }
 
 function load_select_sites(){

@@ -1,2 +1,4 @@
 REM "C:\Documents and Settings\qi.zheng\Local Settings\Application Data\Google\Chrome\Application\chrome.exe" --enable-apps --pack-extension=C:\git\OneThread\OneThread
-"C:\Documents and Settings\qi.zheng\Local Settings\Application Data\Google\Chrome\Application\chrome.exe" --enable-apps --pack-extension=C:\git\OneThread\OneThread --pack-extension-key=C:\git\OneThread\OneThread.pem --no-message-box
+REM "C:\Documents and Settings\qi.zheng\Local Settings\Application Data\Google\Chrome\Application\chrome.exe" --enable-apps --pack-extension=C:\git\OneThread\OneThread --pack-extension-key=C:\git\OneThread\OneThread.pem --no-message-box
+REM "C:\Documents and Settings\Administrator\Local Settings\Application Data\Google\Chrome\Application\chrome.exe" --enable-apps --pack-extension=C:\code\OneThread\OneThread
+"C:\Documents and Settings\Administrator\Local Settings\Application Data\Google\Chrome\Application\chrome.exe" --enable-apps --pack-extension=C:\code\OneThread\OneThread --pack-extension-key=C:\code\OneThread\OneThread.pem --no-message-box
