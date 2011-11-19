@@ -138,8 +138,67 @@ var adapters = {
 			//console.log(result);
 			return result;
 		}
+	},
+	'douban': {
+		'icon': 'img/douban.png',
+		'url': 'http://shuo.douban.com',
+		'login': 'http://shuo.douban.com/',
+		'disable': true,
+		'parser': function(data){
+			var result = [];
+			var lines = data.split(/[\r\n]+/);
+			var json = "";
+			var re = new RegExp(/^\s*App\.Cache\.set.*App\.Collections\.HomeTimeline\((\[.*\]), \{ category\: \'all\'\}\)\);$/);
+			for(var c=0;c<lines.length;c++){
+				//console.log(lines[c]);
+				var re_result = re.exec(lines[c]);
+				if(re_result){
+					json = re_result[1];
+					break;
+				}
+			}
+			//console.log(json);
+			if(json != ""){
+				var d = JSON.parse(json);
+				console.log(d);
+				for(var c=0;c<d.length;c++){
+					var post = d[c];
+					var author = $("<a></a>")
+						.attr("href", "http://shuo.douban.com/#!/" + post.user.uid)
+						.append(
+							$("<img>")
+								.attr("src", post.user.small_avatar)
+						)
+						.click(item_link_click);
+					var dt = new Date(post.created_at);
+					var date = dt.getTime();
+					var uid = post.id;
+					var link = "http://shuo.douban.com/";
+					var content = "";
+					var item = {
+						'content': content,
+						'author': author,
+						'date': date,
+						'uid': uid,
+						'link': link
+					};
+					result.push(item);
+				}
+				//result = result.slice(0, 20);
+				//console.log(result);
+				return result;
+			}else{
+				return false;
+			}
+		}
 	}
 };
+
+$.each(adapters, function(k, v){
+	if(v.disable){
+		delete adapters[k];
+	}
+});
 
 function item_link_click(event){
 	console.log($(this).attr("href"));

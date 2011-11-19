@@ -3,7 +3,14 @@
 	margin: 5px;
 }
 
-body {
-	cursor: pointer;
+#content {
 	font-weight: bold;
+}
+
+.mouseout {
+	background-color: #FFF;
+}
+
+.mouseon {
+	background-color: #FCC;
 }

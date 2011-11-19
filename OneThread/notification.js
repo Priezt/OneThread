@@ -3,7 +3,9 @@ $(init);
 function init(){
 	var statistics = JSON.parse(localStorage['notification_stat']);
 	console.log(statistics);
-	$("#content").empty();
+	$("#content")
+		.empty()
+		.addClass("mouseout");
 	$.each(statistics, function(k, v){
 		var nd = $("<div></div>")
 			.addClass("site_update")
@@ -19,8 +21,20 @@ function init(){
 			)
 		$("#content").append(nd);
 	});
-	$("body").click(function(){
-		console.log("body clicked");
-	});
+	$("#content")
+		.hover(
+			function(){
+				$(this).removeClass("mouseout");
+				$(this).addClass("mouseon");
+			},
+			function(){
+				$(this).removeClass("mouseon");
+				$(this).addClass("mouseout");
+			}
+		)
+		.click(function(){
+			console.log("content clicked");
+			chrome.tabs.sendRequest(parseInt(localStorage["current_tab_id"]), {'func': 'focus'});
+		});
 }
 

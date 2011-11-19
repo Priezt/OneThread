@@ -8,12 +8,25 @@ var cache = new Array();
 var adapter_error = {};
 var running = false;
 var notification = false;
+var statistics;
 
 $(init);
 
 function init(){
 	console.log("init");
 	localStorage['notification_stat'] = JSON.stringify({});
+	chrome.tabs.getCurrent(function(tab){
+		localStorage["current_tab_id"] = "" + tab.id;
+	});
+	chrome.extension.onRequest.addListener(function(request, sender, sendResponse){
+		console.log('func: ' + request.func);
+		if(request.func == "focus"){
+			notification.cancel();
+			chrome.tabs.update(parseInt(localStorage["current_tab_id"]), {
+				selected: true
+			});
+		}
+	});
 	$("#top_dummy").hide();
 	$("#refresh").show();
 	$("#refresh_button").click(function(){
@@ -64,13 +77,19 @@ function load_select_sites(){
 
 function test_func(){
 	$.ajax({
-		url: 'http://www.kaixin001.com/home',
+		url: 'http://shuo.douban.com/',
 		cache: false,
 		success: function(data){
 			$("#playground")
 				.empty()
 				.append($(fetch_html(data)))
 				.show();
+			$("#playground").append(
+				$("<textarea></textarea>")
+					.attr("cols", "200")
+					.attr("rows", "20")
+					.text(data)
+			);
 			console.log("success");
 		},
 		error: function(jqXHR, textStatus, errorThrown){
@@ -250,7 +269,7 @@ function phase_5_show_items(items){
 
 function phase_6_show_notification(items){
 	console.log("phase 6: " + items.length);
-	var statistics = {};
+	statistics = {};
 	if(localStorage['notification_stat']){
 		statistics = JSON.parse(localStorage['notification_stat']);
 	}
@@ -266,14 +285,18 @@ function phase_6_show_notification(items){
 		if(notification){
 			notification.cancel();
 		}
-		// bug here
-		localStorage['notification_stat'] = JSON.stringify(statistics);
-		notification = webkitNotifications.createHTMLNotification('notification.html');
-		notification.onclose = function(){
-			localStorage['notification_stat'] = JSON.stringify({});
-		};
-		notification.show();
+		window.setTimeout("open_notification()", 1000);
 	}
+}
+
+function open_notification(){
+	console.log("open notification");
+	localStorage['notification_stat'] = JSON.stringify(statistics);
+	notification = webkitNotifications.createHTMLNotification('notification.html');
+	notification.onclose = function(){
+		localStorage['notification_stat'] = JSON.stringify({});
+	};
+	notification.show();
 }
 
 function phase_7_show_error_list(){
