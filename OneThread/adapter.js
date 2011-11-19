@@ -8,7 +8,6 @@ var adapters = {
 			var result = [];
 			var d = $(data.data);
 			//console.log(d);
-			$("#playground").empty();
 			$("#playground").append(d);
 			$("#playground dl.feed_list").each(function(){
 				//console.log("got");
@@ -100,8 +99,6 @@ var adapters = {
 		'parser': function(data){
 			var result = [];
 			var d = $(fetch_html(data));
-			//console.log(d);
-			$("#playground").empty();
 			$("#playground").append(d);
 			var nw = Date.now();
 			//console.log(d);

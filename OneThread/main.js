@@ -139,6 +139,7 @@ function check_update(){
 	running = true;
 	$("#top_dummy").show();
 	$("#refresh").hide();
+	$("#playground").empty();
 	feed_stack = [];
 	to_be_shown = [];
 	for(var c=0;c<conf.interest.length;c++){
