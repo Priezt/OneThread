@@ -5,6 +5,8 @@ var adpt = '';
 var errors = [];
 var to_be_shown = [];
 var cache = new Array();
+var last_time = {};
+var last_time_next = {};
 var adapter_error = {};
 var running = false;
 var notification = false;
@@ -24,6 +26,11 @@ function init(){
 			notification.cancel();
 			chrome.tabs.update(parseInt(localStorage["current_tab_id"]), {
 				selected: true
+			});
+			chrome.windows.getCurrent(function(w){
+				chrome.windows.update(w.id, {
+					focused: true
+				});
 			});
 		}
 	});
@@ -342,6 +349,11 @@ function phase_final(){
 	phase_5_show_items(to_be_shown);
 	phase_6_show_notification(to_be_shown);
 	phase_7_show_error_list();
+	$.each(last_time, function(k, v){
+		if(last_time_next[k] > last_time[k]){
+			last_time[k] = last_time_next[k];
+		}
+	});
 	phase_end();
 }
 
@@ -355,6 +367,16 @@ function phase_end(){
 function is_new_item(item){
 	if(! cache[current_feed]){
 		cache[current_feed] = new Array();
+	}
+	if(! last_time[current_feed]){
+		last_time[current_feed] = 0;
+		last_time_next[current_feed] = 0;
+	}
+	if(last_time[current_feed] > item.date){
+		return false;
+	}
+	if(last_time_next[current_feed] < item.date){
+		last_time_next[current_feed] = item.date;
 	}
 	if(cache[current_feed][item.uid]){
 		return false;
