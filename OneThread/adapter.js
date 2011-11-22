@@ -188,6 +188,44 @@ var adapters = {
 				return false;
 			}
 		}
+	},
+	'facebook': {
+		'icon': 'img/facebook.png',
+		'url': 'http://www.facebook.com',
+		'login': 'http://www.facebook.com',
+		'parser': function(data){
+			var all_match = fetch_re_all(data, new RegExp(/\bbig_pipe\.onPageletArrive\((\{.*\})\);<\/script>$/));
+			for(var c=0;c<all_match.length;c++){
+				var ob = JSON.parse(all_match[c]);
+				if(ob.append == "home_stream" && ob.id == "pagelet_sub_stream_0"){
+					var content = $(ob.content.pagelet_sub_stream_0);
+					$("#playground").append(content);
+				}
+			}
+			var result = [];
+			$("#playground div.storyContent").each(function(){
+				var date = fetch_facebook_timestamp($(this));
+				var uid = Math.random().toString();
+				var link = "http://www.facebook.com";
+				var author = $(this).find("a.actorPhoto");
+				var content = $(this);
+				content.find("a").each(function(){
+					$(this).attr("target", "_blank");
+				}).click(item_link_click);
+				content.find("form").remove();
+				content.find("a.actorPhoto").remove();
+				var item = {
+					'content': content,
+					'author': author,
+					'date': date,
+					'uid': uid,
+					'link': link
+				};
+				//console.log(item);
+				result.push(item);
+			});
+			return result;
+		}
 	}
 };
 
@@ -196,6 +234,8 @@ $.each(adapters, function(k, v){
 		delete adapters[k];
 	}
 });
+
+console.log(adapters);
 
 function item_link_click(event){
 	console.log($(this).attr("href"));
@@ -236,6 +276,7 @@ function parse_kaixin_time(date_string){
 		return default_date;
 	}
 }
+
 function time2str(date){
 	var d = new Date();
 	d.setTime(date);
@@ -248,4 +289,22 @@ function time2str(date){
 	result += " ";
 	result += d.toLocaleTimeString();
 	return result;
+}
+
+function fetch_facebook_timestamp(d){
+	var feedback_params = d.find("form input[name='feedback_params']").val();
+	var re1 = RegExp(/\"content_timestamp\"\:\"([0-9]+)\"/);
+	var re_result_1 = re1.exec(feedback_params);
+	if(re_result_1){
+		return parseInt(re_result_1[1]) * 1000;
+	}else{
+		var date_string = d.find("abbr.timestamp").attr("data-date");
+		if(date_string){
+			//console.log("date string matched: " + date_string);
+			return Date.parse(date_string);
+		}else{
+			//console.log("nothing match, use now()");
+			return Date.now();
+		}
+	}
 }

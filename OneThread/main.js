@@ -11,11 +11,18 @@ var adapter_error = {};
 var running = false;
 var notification = false;
 var statistics;
+var chrome_app_detail = chrome.app.getDetails();
+var is_in_dev = (chrome_app_detail['key']) ? false : true;
 
 $(init);
 
 function init(){
 	console.log("init");
+	if(is_in_dev){
+		$("#dev_zone").show();
+	}else{
+		$("#dev_zone").hide();
+	}
 	localStorage['notification_stat'] = JSON.stringify({});
 	chrome.tabs.getCurrent(function(tab){
 		localStorage["current_tab_id"] = "" + tab.id;
@@ -47,7 +54,9 @@ function init(){
 	$("#test").click(function(){
 		test_func();
 	});
-	start_main_loop();
+	if(! is_in_dev){
+		start_main_loop();
+	}
 }
 
 function load_select_sites(){
@@ -85,7 +94,7 @@ function load_select_sites(){
 
 function test_func(){
 	$.ajax({
-		url: 'http://shuo.douban.com/',
+		url: 'http://www.facebook.com/',
 		cache: false,
 		success: function(data){
 			$("#playground")
@@ -98,6 +107,16 @@ function test_func(){
 					.attr("rows", "20")
 					.text(data)
 			);
+			var result = fetch_re_all(data, new RegExp(/\bbig_pipe\.onPageletArrive\((\{.*\})\);<\/script>$/));
+			for(var c=0;c<result.length;c++){
+				//console.log(JSON.parse(result[c]));
+				var ob = JSON.parse(result[c]);
+				if(ob.append == "home_stream" && ob.id == "pagelet_sub_stream_0"){
+					var content = $(ob.content.pagelet_sub_stream_0);
+					console.log(content);
+					$("#playground").append(content);
+				}
+			}
 			console.log("success");
 		},
 		error: function(jqXHR, textStatus, errorThrown){
@@ -372,7 +391,7 @@ function is_new_item(item){
 		last_time[current_feed] = 0;
 		last_time_next[current_feed] = 0;
 	}
-	if(last_time[current_feed] > item.date){
+	if(last_time[current_feed] >= item.date){
 		return false;
 	}
 	if(last_time_next[current_feed] < item.date){

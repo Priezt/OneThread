@@ -51,3 +51,26 @@ function jsearch(selector){
 	console.log("jsearch: " + selector);
 	return $(selector);
 }
+
+function fetch_re_all(data, re){
+	var lines = data.split(/[\r\n]+/);
+	var result = [];
+	for(var c=0;c<lines.length;c++){
+		var re_result = re.exec(lines[c]);
+		if(re_result){
+			result.push(re_result[1]);
+		}
+	}
+	return result;
+}
+
+function fetch_re(data, re){
+	var lines = data.split(/[\r\n]+/);
+	for(var c=0;c<lines.length;c++){
+		var re_result = re.exec(lines[c]);
+		if(re_result){
+			return re_result[1];
+		}
+	}
+	return "";
+}
