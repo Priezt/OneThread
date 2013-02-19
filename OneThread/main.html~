@@ -1,0 +1,21 @@
+<html>
+	<head>
+		<script src="lib/jquery-1.6.1.min.js"></script>
+		<script src="lib/ztoolkit.js"></script>
+		<script src="lib/md5.js"></script>
+		<script src="adapter.js"></script>
+		<script src="main.js"></script>
+		<link href="main.css" type="text/css" rel="stylesheet"/>
+	</head>
+	<body>
+		<input type="button" value="Start" id="start">
+		<input type="button" value="Test" id="test">
+		<hr>
+		<div id="warning">
+		</div>
+		<div id="content">
+			<div id="top_dummy"></div>
+		</div>
+		<div id="playground"></div>
+	</body>
+</html>
